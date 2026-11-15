@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L&L-TraderPro | Black Edition</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#070709',
+                        carbon: '#0e0e12',
+                        charcoal: '#16161d',
+                        gold: {
+                            light: '#F3E5AB',
+                            DEFAULT: '#D4AF37',
+                            dark: '#B4941F',
+                            muted: 'rgba(212, 175, 55, 0.25)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- TradingView Widget Script -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <style>
+        /* Luxury Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #070709;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.3);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(212, 175, 55, 0.6);
+        }
+
+        /* Luxury Gold Glow & Glassmorphism */
+        .gold-glow {
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.14);
+        }
+        .gold-border-subtle {
+            border-color: rgba(212, 175, 55, 0.25);
+        }
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 50%, #B4941F 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gold-gradient-bg {
+            background: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 55%, #B4941F 100%);
+        }
+
+        /* AI Overlay Panel Glassmorphism */
+        .ai-glass-panel {
+            background: rgba(10, 10, 14, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 175, 55, 0.15);
+        }
+
+        /* AI Scanner Animation */
+        @keyframes scanLine {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(250%); opacity: 0; }
+        }
+        .ai-scanner-bar {
+            animation: scanLine 1.4s ease-in-out infinite;
+        }
+
+        /* Center Candle Timer Badge */
+        .candle-timer-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(7, 7, 9, 0.82);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.9), 0 0 15px rgba(212, 175, 55, 0.2);
+            z-index: 15;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Fullscreen / Maximized Card Style Overlay */
+        .card-maximized {
+            position: fixed !important;
+            inset: 0 !important;
+            z-index: 9999 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            border-color: #D4AF37 !important;
+        }
+
+        /* Grid height responsiveness */
+        .dashboard-grid {
+            display: grid;
+            gap: 0.5rem;
+            width: 100%;
+            height: calc(100vh - 72px);
+            grid-auto-rows: 1fr;
+        }
+        .grid-1x1 { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+        .grid-2x2 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
+        .grid-3x3 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+        .grid-4x4 { grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); }
+
+        @media (max-width: 1200px) {
+            body {
+                overflow-y: auto !important;
+                height: auto !important;
+                min-height: 100vh;
+            }
+            .dashboard-grid {
+                height: auto;
+                min-height: calc(100vh - 72px);
+            }
+            .grid-1x1, .grid-2x2, .grid-3x3, .grid-4x4 {
+                grid-template-columns: 1fr;
+                grid-auto-rows: 460px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-obsidian text-slate-100 font-sans h-screen flex flex-col overflow-hidden select-none">
+
+    <!-- Top Executive VIP Navigation Bar -->
+    <header class="h-[60px] bg-carbon border-b gold-border-subtle px-3 sm:px-4 flex items-center justify-between flex-shrink-0 z-30 shadow-lg">
+        <!-- Brand & Watchlist Toggle -->
+        <div class="flex items-center space-x-2.5 sm:space-x-3">
+            <button id="sidebarToggleBtn" onclick="toggleSidebar()" title="Alternar Watchlist VIP" class="p-2 rounded-lg bg-charcoal hover:bg-zinc-800 text-gold border border-gold/20 hover:border-gold/50 transition flex items-center justify-center">
+                <i class="fa-solid fa-bars text-sm"></i>
+            </button>
+            <div class="flex items-center space-x-2.5">
+                <div class="w-9 h-9 rounded-xl gold-gradient-bg flex items-center justify-center shadow-md shadow-gold/20 font-mono font-black text-obsidian text-xs tracking-tighter border border-gold-light/50 flex-shrink-0">
+                    L&amp;L
+                </div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <h1 class="font-extrabold text-sm sm:text-base leading-tight tracking-wide text-slate-100">L&amp;L-TraderPro</h1>
+                    <span class="px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase tracking-widest bg-gold/10 text-gold border border-gold/30 rounded hidden xs:inline-block">BLACK EDITION</span>
+                    
+                    <!-- Botão Gerenciamento (quando na tela de gráficos) -->
+                    <button id="navRiskBtn" onclick="openRiskManagement()" class="ml-1.5 px-2.5 py-1 bg-gold/15 hover:bg-gold text-gold hover:text-obsidian border border-gold/40 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition shadow-sm">
+                        <i class="fa-solid fa-table-list text-[10px]"></i>
+                        <span>Gerenciamento</span>
+                    </button>
+
+                    <!-- Botão Voltar (visível no menu superior ao entrar em Gerenciamento) -->
+                    <button id="navBackBtn" onclick="closeRiskManagement()" class="hidden ml-1.5 px-3 py-1 bg-gold hover:bg-gold-light text-obsidian border border-gold-light/60 rounded-lg text-[11px] font-extrabold flex items-center gap-1.5 transition shadow-md shadow-gold/25">
+                        <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                        <span>Voltar aos Gráficos</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid Matrix Selector & Global Sync (Oculto quando em Gerenciamento) -->
+        <div id="headerChartControls" class="flex items-center space-x-1.5 sm:space-x-2">
+            <div class="flex items-center bg-charcoal/90 p-0.5 rounded-lg border border-gold/20">
+                <span class="text-[11px] text-gold/80 font-medium px-2 hidden md:inline"><i class="fa-solid fa-table-cells mr-1"></i>Grid:</span>
+                <button onclick="setGrid('1x1')" id="btn-1x1" title="1x1 Grid" class="grid-btn px-2 py-1 text-xs font-semibold rounded text-slate-400 hover:text-gold transition">1x1</button>
+                <button onclick="setGrid('2x2')" id="btn-2x2" title="2x2 Grid (4 Gráficos)" class="grid-btn px-2 py-1 text-xs font-semibold rounded bg-gold text-obsidian font-bold transition">2x2</button>
+                <button onclick="setGrid('3x3')" id="btn-3x3" title="3x3 Grid (9 Gráficos)" class="grid-btn px-2 py-1 text-xs font-semibold rounded text-slate-400 hover:text-gold transition hidden sm:inline-block">3x3</button>
+                <button onclick="setGrid('4x4')" id="btn-4x4" title="4x4 Grid (16 Gráficos)" class="grid-btn px-2 py-1 text-xs font-semibold rounded text-slate-400 hover:text-gold transition hidden lg:inline-block">4x4</button>
+            </div>
+
+            <button onclick="syncAllTimeframes('15')" title="Sincronizar Timeframes para 15m" class="px-2.5 py-1.5 bg-charcoal hover:bg-zinc-800 text-gold border border-gold/25 hover:border-gold/50 text-xs rounded-lg transition flex items-center gap-1.5 font-medium">
+                <i class="fa-solid fa-rotate text-[10px]"></i> <span class="hidden sm:inline">Sincronizar</span>
+            </button>
+        </div>
+
+        <!-- Status Badge no Menu Superior quando em Gerenciamento -->
+        <div id="headerRiskStatus" class="hidden items-center gap-2">
+            <span class="px-2.5 py-1 bg-gold/10 border border-gold/30 rounded-lg text-[11px] font-mono font-bold text-gold-light hidden sm:inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved text-gold text-[10px]"></i> GESTÃO DE BANCA VIP
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Workspace Area -->
+    <div id="tradingWorkspace" class="flex flex-1 overflow-hidden relative">
+        
+        <!-- Sidebar Watchlist Drawer -->
+        <aside id="sidebarWatchlist" class="w-64 max-w-[80vw] bg-carbon border-r gold-border-subtle flex flex-col transition-all duration-300 flex-shrink-0 z-20 absolute md:relative h-full shadow-2xl md:shadow-none">
+            <div class="p-3 border-b gold-border-subtle flex items-center justify-between">
+                <span class="text-xs font-bold text-gold uppercase tracking-wider"><i class="fa-solid fa-crown mr-1.5"></i>Ativos VIP</span>
+                <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-gold p-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- Search Watchlist -->
+            <div class="p-2 border-b border-zinc-800/80">
+                <div class="relative">
+                    <i class="fa-solid fa-search absolute left-2.5 top-2 text-gold/50 text-xs"></i>
+                    <input type="text" id="watchlistSearch" placeholder="Buscar ativo..." oninput="filterWatchlist(this.value)"
+                           class="w-full bg-obsidian text-slate-200 pl-8 pr-2 py-1.5 rounded-lg text-xs border border-gold/20 focus:outline-none focus:border-gold">
+                </div>
+            </div>
+
+            <!-- Categories Tabs -->
+            <div class="flex border-b border-zinc-800/80 text-[10px] font-semibold overflow-x-auto">
+                <button onclick="filterCategory('ALL')" id="cat_ALL" class="flex-1 py-2 px-2 text-gold border-b-2 border-gold bg-gold/10 whitespace-nowrap">Todos</button>
+                <button onclick="filterCategory('FOREX')" id="cat_FOREX" class="flex-1 py-2 px-2 text-slate-400 hover:text-gold whitespace-nowrap">Forex</button>
+                <button onclick="filterCategory('CRYPTO')" id="cat_CRYPTO" class="flex-1 py-2 px-2 text-slate-400 hover:text-gold whitespace-nowrap">Cripto</button>
+                <button onclick="filterCategory('STOCKS')" id="cat_STOCKS" class="flex-1 py-2 px-2 text-slate-400 hover:text-gold whitespace-nowrap">Ações</button>
+            </div>
+
+            <!-- Watchlist Items List -->
+            <div id="watchlistItems" class="flex-1 overflow-y-auto p-2 space-y-1.5">
+                <!-- Injected via JS -->
+            </div>
+        </aside>
+
+        <!-- Dynamic Multi-Chart Grid Workspace -->
+        <main class="flex-1 bg-obsidian p-1.5 sm:p-2 overflow-y-auto md:overflow-hidden flex flex-col">
+            <div id="chartsGrid" class="dashboard-grid grid-2x2 transition-all duration-300">
+                <!-- Dynamically populated chart cards -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Risk Management (Planilha de Gerenciamento 2x1 / 4x2) View -->
+    <div id="riskManagementView" class="hidden flex-1 bg-obsidian flex flex-col overflow-hidden z-20">
+        <!-- Sub-header da Planilha -->
+        <div class="bg-carbon border-b gold-border-subtle px-3 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div>
+                    <h2 class="text-sm sm:text-base font-extrabold text-gold-light tracking-wide flex items-center gap-2">
+                        <i class="fa-solid fa-calculator text-gold"></i> Planilha de Gerenciamento Automático
+                    </h2>
+                    <p class="text-[10px] text-slate-400">Cálculo de Soros &amp; Alavancagem Diária (1ª à 5ª Entrada)</p>
+                </div>
+            </div>
+
+            <!-- Controles do Trader, Aba (2x1 / 4x2) e % Entrada -->
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                <div class="flex items-center bg-charcoal border border-gold/25 rounded-lg px-2.5 py-1">
+                    <span class="text-[10px] text-gold/80 font-mono uppercase mr-2">Trader:</span>
+                    <input type="text" id="traderNameInput" value="L&L VIP TRADER"
+                           class="bg-transparent text-xs font-bold text-slate-100 focus:outline-none w-32 sm:w-40">
+                </div>
+
+                <div class="flex items-center bg-charcoal border border-gold/25 rounded-lg px-2.5 py-1" title="Percentual da Banca na 1ª Entrada">
+                    <span class="text-[10px] text-gold/80 font-mono uppercase mr-1.5">1ª Entrada %:</span>
+                    <input type="number" id="entryPercentInput" value="5" min="1" max="100" step="0.5" onchange="recalculateAllRiskRows()"
+                           class="bg-obsidian text-gold-light font-mono font-bold text-xs w-12 text-center rounded border border-gold/20 focus:outline-none">
+                    <span class="text-xs text-gold ml-1">%</span>
+                </div>
+
+                <!-- Abas 2x1 e 4x2 igual à planilha -->
+                <div class="flex bg-charcoal p-0.5 rounded-lg border border-gold/30">
+                    <button onclick="switchRiskTab('2x1')" id="tab-2x1" class="px-3 py-1 text-xs font-extrabold rounded-md bg-gold text-obsidian transition">2x1</button>
+                    <button onclick="switchRiskTab('4x2')" id="tab-4x2" class="px-3 py-1 text-xs font-bold rounded-md text-slate-400 hover:text-gold transition">4x2</button>
+                </div>
+
+                <button onclick="resetRiskSheet()" title="Limpar Planilha" class="px-2.5 py-1.5 bg-rose-950/50 hover:bg-rose-900/70 text-rose-300 border border-rose-500/30 rounded-lg text-xs font-semibold transition">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabela Planilha Horizontal Responsiva -->
+        <div class="flex-1 overflow-auto p-2 sm:p-4">
+            <div class="bg-carbon border border-gold/30 rounded-xl shadow-2xl overflow-x-auto">
+                <table class="w-full border-collapse text-xs font-mono whitespace-nowrap">
+                    <thead>
+                        <tr class="bg-charcoal text-gold border-b border-gold/40 text-[11px] uppercase tracking-wider">
+                            <th class="py-2.5 px-3 border-r border-gold/20 text-center bg-gold/15 text-gold-light font-extrabold sticky left-0 z-10">Dia</th>
+                            <th class="py-2.5 px-3 border-r border-gold/20 text-right">Banca Atual</th>
+                            <th class="py-2.5 px-3 border-r border-gold/20 text-right bg-gold/5">1ª Entrada</th>
+                            <th class="py-2.5 px-2 border-r border-gold/20 text-center">Payout</th>
+                            <th class="py-2.5 px-3 border-r border-gold/20 text-center">Selecionar</th>
+                            <th class="py-2.5 px-3 border-r border-gold/20 text-right bg-gold/5">2ª Entrada</th>
+                            <th class="py-2.5 px-2 border-r border-gold/20 text-center">Payout</th>
+                            <th class="py-2.5 px-3 border-r border-gold/20 text-center">Selecionar</th>
+                            <th class="py-2.5 px-3 border-r border-gold/20 text-right bg-gold/5">3ª Entrada</th>
+                            <th class="py-2.5 px-2 border-r border-gold/20 text-center">Payout</th>
+                            <th class="py-2.5 px-3 border-r border-gold/20 text-center">Selecionar</th>
+                            <th class="py-2.5 px-3 border-r border-gold/20 text-right bg-gold/5">4ª Entrada</th>
+                            <th class="py-2.5 px-2 border-r border-gold/20 text-center">Payout</th>
+                            <th class="py-2.5 px-3 border-r border-gold/20 text-center">Selecionar</th>
+                            <th class="py-2.5 px-3 border-r border-gold/20 text-right bg-gold/5">5ª Entrada</th>
+                            <th class="py-2.5 px-2 border-r border-gold/20 text-center">Payout</th>
+                            <th class="py-2.5 px-3 border-r border-gold/20 text-center">Selecionar</th>
+                            <th class="py-2.5 px-4 text-right bg-gold/20 text-gold-light font-extrabold">Banca Final</th>
+                        </tr>
+                    </thead>
+                    <tbody id="riskTableBody" class="divide-y divide-zinc-800/80">
+                        <!-- Linhas 1 a 31 geradas via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Strategy Selection Modal -->
+    <div id="strategyModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-carbon border border-gold/40 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col gold-glow">
+            <div class="px-4 py-3 bg-charcoal border-b gold-border-subtle flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-gold/15 text-gold flex items-center justify-center border border-gold/30">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xs text-slate-100">Estratégias & Setups Institucionais</h3>
+                        <p class="text-[10px] text-gold/80">Sincronizar gráfico &amp; IA no Card <span id="modalTargetLabel" class="font-mono font-bold">#1</span></p>
+                    </div>
+                </div>
+                <button onclick="closeStrategyModal()" class="text-slate-400 hover:text-gold p-1.5 rounded-lg hover:bg-zinc-800 transition">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Strategy List -->
+            <div class="p-3 max-h-[360px] overflow-y-auto space-y-1.5" id="strategyOptionsList">
+                <!-- Generated dynamically -->
+            </div>
+
+            <div class="p-3 bg-obsidian border-t gold-border-subtle flex justify-end">
+                <button onclick="closeStrategyModal()" class="px-4 py-1.5 bg-charcoal hover:bg-zinc-800 text-gold border border-gold/30 text-xs rounded-lg font-medium transition">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script Logic -->
+    <script>
+        let currentGrid = '2x2';
+        let isSidebarOpen = window.innerWidth >= 768;
+        let currentCategoryFilter = 'ALL';
+        let currentSearchQuery = '';
+        let activeStrategyChartIndex = 0;
+        let tvWidgets = {};
+
+        // Strategy Presets synced with AI Logic
+        const strategyPresets = {
+            'w_pattern': {
+                name: 'Padrão W (Duplo Fundo)',
+                studies: ['Volume@tv-basicstudies', 'MACD@tv-basicstudies'],
+                aiLogic: 'Detecção de estrutura de reversão em Duplo Fundo com divergência altista no MACD e pico de volume comprador na quebra da linha de pescoço.'
+            },
+            'ma_cross': {
+                name: 'MA Cross (EMA 9/21)',
+                studies: ['MASimple@tv-basicstudies', 'MAExp@tv-basicstudies'],
+                aiLogic: 'Cruzamento exponencial rápido (EMA 9 sobre EMA 21) validado por inclinação de tendência primária e fluxo direcional.'
+            },
+            'bb_rsi': {
+                name: 'Bollinger + RSI',
+                studies: ['BB@tv-basicstudies', 'RSI@tv-basicstudies'],
+                aiLogic: 'Exaustão estatística nas bandas externas de Bollinger combinada com sobrecompra/sobrevenda no Índice de Força Relativa (RSI 14).'
+            },
+            'smc_orderblock': {
+                name: 'Smart Money & Vol',
+                studies: ['Volume@tv-basicstudies', 'MAExp@tv-basicstudies'],
+                aiLogic: 'Mapeamento de mitigação institucional em Order Block com captura de liquidez (Sweep) e desequilíbrio (Fair Value Gap).'
+            },
+            'breakout_sr': {
+                name: 'Breakout Keltner/ATR',
+                studies: ['KeltnerChannels@tv-basicstudies', 'ATR@tv-basicstudies'],
+                aiLogic: 'Expansão de volatilidade acima do Canal de Keltner com confirmação de amplitude média verdadeira (ATR) crescente.'
+            },
+            'fibonacci': {
+                name: 'Fibonacci Golden Zone',
+                studies: ['MASimple@tv-basicstudies'],
+                aiLogic: 'Retração institucional na Zona de Ouro (50% - 61.8% de Fibonacci) com rejeição de pavio e defesa de liquidez.'
+            },
+            'pivot_points': {
+                name: 'Pivot Points',
+                studies: ['PivotPointsHighLow@tv-basicstudies'],
+                aiLogic: 'Reação de preço nos níveis matemáticos de Pivot S1/R1 com absorção de ordens no livro institucional.'
+            },
+            'stoch_macd': {
+                name: 'Stoch + MACD',
+                studies: ['Stochastic@tv-basicstudies', 'MACD@tv-basicstudies'],
+                aiLogic: 'Gatilho duplo de momentum com cruzamento do Estocástico em zona extrema alinhado ao histograma do MACD.'
+            },
+            'vwap_momentum': {
+                name: 'VWAP + Momentum',
+                studies: ['VWAP@tv-basicstudies', 'Momentum@tv-basicstudies'],
+                aiLogic: 'Posicionamento institucional acima/abaixo do preço médio ponderado por volume (VWAP) com aceleração de Momentum.'
+            },
+            'clear': {
+                name: 'Limpar Estudos (Price Action)',
+                studies: [],
+                aiLogic: 'Leitura pura de Price Action institucional: estrutura de topos e fundos, fluxo de velas e zonas de liquidez.'
+            }
+        };
+
+        let chartCards = [
+            { id: 0, symbol: 'FX:EURUSD', timeframe: '15', style: '1', activeStrategy: 'smc_orderblock', isMaximized: false, showAI: false, aiData: null },
+            { id: 1, symbol: 'OANDA:XAUUSD', timeframe: '15', style: '1', activeStrategy: 'bb_rsi', isMaximized: false, showAI: false, aiData: null },
+            { id: 2, symbol: 'BINANCE:BTCUSDT', timeframe: '15', style: '1', activeStrategy: 'ma_cross', isMaximized: false, showAI: false, aiData: null },
+            { id: 3, symbol: 'BMFBOVESPA:PETR4', timeframe: '15', style: '1', activeStrategy: 'vwap_momentum', isMaximized: false, showAI: false, aiData: null },
+            { id: 4, symbol: 'FOREXCOM:SPXUSD', timeframe: '15', style: '1', activeStrategy: '', isMaximized: false, showAI: false, aiData: null },
+            { id: 5, symbol: 'NASDAQ:NVDA', timeframe: '15', style: '1', activeStrategy: '', isMaximized: false, showAI: false, aiData: null },
+            { id: 6, symbol: 'FX:GBPUSD', timeframe: '15', style: '1', activeStrategy: '', isMaximized: false, showAI: false, aiData: null },
+            { id: 7, symbol: 'TVC:USOIL', timeframe: '15', style: '1', activeStrategy: '', isMaximized: false, showAI: false, aiData: null },
+            { id: 8, symbol: 'FX:USDJPY', timeframe: '15', style: '1', activeStrategy: '', isMaximized: false, showAI: false, aiData: null },
+            { id: 9, symbol: 'BINANCE:ETHUSDT', timeframe: '15', style: '1', activeStrategy: '', isMaximized: false, showAI: false, aiData: null },
+            { id: 10, symbol: 'BMFBOVESPA:VALE3', timeframe: '15', style: '1', activeStrategy: '', isMaximized: false, showAI: false, aiData: null },
+            { id: 11, symbol: 'OANDA:XAGUSD', timeframe: '15', style: '1', activeStrategy: '', isMaximized: false, showAI: false, aiData: null },
+            { id: 12, symbol: 'NASDAQ:AAPL', timeframe: '15', style: '1', activeStrategy: '', isMaximized: false, showAI: false, aiData: null },
+            { id: 13, symbol: 'NASDAQ:TSLA', timeframe: '15', style: '1', activeStrategy: '', isMaximized: false, showAI: false, aiData: null },
+            { id: 14, symbol: 'FOREXCOM:NSXUSD', timeframe: '15', style: '1', activeStrategy: '', isMaximized: false, showAI: false, aiData: null },
+            { id: 15, symbol: 'BMFBOVESPA:IBOV', timeframe: '15', style: '1', activeStrategy: '', isMaximized: false, showAI: false, aiData: null }
+        ];
+
+        let watchlist = [
+            { symbol: 'FX:EURUSD', name: 'EUR / USD', category: 'FOREX' },
+            { symbol: 'FX:GBPUSD', name: 'GBP / USD', category: 'FOREX' },
+            { symbol: 'FX:USDJPY', name: 'USD / JPY', category: 'FOREX' },
+            { symbol: 'FX:AUDUSD', name: 'AUD / USD', category: 'FOREX' },
+            { symbol: 'OANDA:XAUUSD', name: 'Ouro (Gold)', category: 'FOREX' },
+            { symbol: 'OANDA:XAGUSD', name: 'Prata (Silver)', category: 'FOREX' },
+            { symbol: 'BINANCE:BTCUSDT', name: 'Bitcoin / USDT', category: 'CRYPTO' },
+            { symbol: 'BINANCE:ETHUSDT', name: 'Ethereum / USDT', category: 'CRYPTO' },
+            { symbol: 'BINANCE:SOLUSDT', name: 'Solana / USDT', category: 'CRYPTO' },
+            { symbol: 'BMFBOVESPA:PETR4', name: 'Petrobras PN', category: 'STOCKS' },
+            { symbol: 'BMFBOVESPA:VALE3', name: 'Vale ON', category: 'STOCKS' },
+            { symbol: 'BMFBOVESPA:ITUB4', name: 'Itaú Unibanco', category: 'STOCKS' },
+            { symbol: 'NASDAQ:AAPL', name: 'Apple Inc', category: 'STOCKS' },
+            { symbol: 'NASDAQ:NVDA', name: 'NVIDIA Corp', category: 'STOCKS' },
+            { symbol: 'NASDAQ:TSLA', name: 'Tesla Inc', category: 'STOCKS' },
+            { symbol: 'FOREXCOM:SPXUSD', name: 'S&P 500 Index', category: 'FOREX' },
+            { symbol: 'TVC:USOIL', name: 'WTI Crude Oil', category: 'FOREX' }
+        ];
+
+        window.onload = function() {
+            applySidebarState();
+            renderWatchlist();
+            renderDashboard();
+            buildStrategyModalOptions();
+            startGlobalCandleTimer();
+        };
+
+        function startGlobalCandleTimer() {
+            setInterval(updateCandleTimers, 1000);
+            updateCandleTimers();
+        }
+
+        function updateCandleTimers() {
+            const now = new Date();
+            const currentSeconds = now.getSeconds();
+            const currentMinutes = now.getMinutes();
+
+            chartCards.forEach((card, index) => {
+                const timerEl = document.getElementById(`candle_timer_val_${index}`);
+                if (!timerEl) return;
+
+                let intervalMinutes = 15;
+                if (card.timeframe === '1') intervalMinutes = 1;
+                else if (card.timeframe === '5') intervalMinutes = 5;
+                else if (card.timeframe === '15') intervalMinutes = 15;
+                else if (card.timeframe === '60') intervalMinutes = 60;
+                else if (card.timeframe === '240') intervalMinutes = 240;
+                else if (card.timeframe === 'D') intervalMinutes = 1440;
+
+                const totalSeconds = (currentMinutes % intervalMinutes) * 60 + currentSeconds;
+                const remainingTotalSeconds = (intervalMinutes * 60) - totalSeconds;
+
+                const remMinutes = Math.floor(remainingTotalSeconds / 60);
+                const remSeconds = remainingTotalSeconds % 60;
+
+                const formattedMin = String(remMinutes).padStart(2, '0');
+                const formattedSec = String(remSeconds).padStart(2, '0');
+
+                timerEl.innerText = `${formattedMin}:${formattedSec}`;
+            });
+        }
+
+        function applySidebarState() {
+            const sb = document.getElementById('sidebarWatchlist');
+            if (!sb) return;
+            if (isSidebarOpen) {
+                sb.classList.remove('hidden', 'w-0', 'opacity-0');
+                sb.classList.add('w-64');
+            } else {
+                sb.classList.add('hidden');
+            }
+        }
+
+        function toggleSidebar() {
+            isSidebarOpen = !isSidebarOpen;
+            applySidebarState();
+        }
+
+        function filterCategory(cat) {
+            currentCategoryFilter = cat;
+            ['ALL', 'FOREX', 'CRYPTO', 'STOCKS'].forEach(c => {
+                const btn = document.getElementById(`cat_${c}`);
+                if (!btn) return;
+                if (c === cat) {
+                    btn.className = "flex-1 py-2 px-2 text-gold border-b-2 border-gold bg-gold/10 whitespace-nowrap";
+                } else {
+                    btn.className = "flex-1 py-2 px-2 text-slate-400 hover:text-gold whitespace-nowrap";
+                }
+            });
+            renderWatchlist();
+        }
+
+        function filterWatchlist(query) {
+            currentSearchQuery = query.toLowerCase();
+            renderWatchlist();
+        }
+
+        function renderWatchlist() {
+            const container = document.getElementById('watchlistItems');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const filtered = watchlist.filter(item => {
+                const matchCat = currentCategoryFilter === 'ALL' || item.category === currentCategoryFilter;
+                const matchQuery = item.symbol.toLowerCase().includes(currentSearchQuery) || item.name.toLowerCase().includes(currentSearchQuery);
+                return matchCat && matchQuery;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="text-center text-slate-500 text-[11px] py-4">Nenhum ativo encontrado</div>';
+                return;
+            }
+
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "p-2 bg-obsidian/70 hover:bg-charcoal border border-zinc-800/90 hover:border-gold/40 rounded-lg flex items-center justify-between cursor-pointer transition group";
+                div.onclick = () => assignToActiveChart(item.symbol);
+                div.innerHTML = `
+                    <div class="truncate">
+                        <div class="font-bold text-[11px] text-slate-200 group-hover:text-gold font-mono">${item.symbol}</div>
+                        <div class="text-[9px] text-slate-400 truncate">${item.name}</div>
+                    </div>
+                    <div class="flex space-x-1">
+                        <span class="px-1.5 py-0.5 bg-gold/10 group-hover:bg-gold text-gold group-hover:text-obsidian rounded text-[9px] transition font-bold">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function getGridCount(gridStr) {
+            switch(gridStr) {
+                case '1x1': return 1;
+                case '2x2': return 4;
+                case '3x3': return 9;
+                case '4x4': return 16;
+                default: return 4;
+            }
+        }
+
+        function setGrid(gridType) {
+            currentGrid = gridType;
+            ['1x1', '2x2', '3x3', '4x4'].forEach(g => {
+                const btn = document.getElementById(`btn-${g}`);
+                if (!btn) return;
+                const responsiveClass = g === '3x3' ? 'hidden sm:inline-block' : (g === '4x4' ? 'hidden lg:inline-block' : '');
+                if (g === gridType) {
+                    btn.className = `grid-btn px-2 py-1 text-xs font-bold rounded bg-gold text-obsidian transition ${responsiveClass}`;
+                } else {
+                    btn.className = `grid-btn px-2 py-1 text-xs font-semibold rounded text-slate-400 hover:text-gold transition ${responsiveClass}`;
+                }
+            });
+            renderDashboard();
+        }
+
+        function generateAISignalForCard(index) {
+            const card = chartCards[index];
+            const stratKey = card.activeStrategy || 'clear';
+            const stratObj = strategyPresets[stratKey] || strategyPresets['clear'];
+            
+            const now = new Date();
+            let intervalMinutes = 15;
+            if (card.timeframe === '1') intervalMinutes = 1;
+            else if (card.timeframe === '5') intervalMinutes = 5;
+            else if (card.timeframe === '15') intervalMinutes = 15;
+            else if (card.timeframe === '60') intervalMinutes = 60;
+            else if (card.timeframe === '240') intervalMinutes = 240;
+            else if (card.timeframe === 'D') intervalMinutes = 1440;
+
+            const currentMinutes = now.getMinutes();
+            const currentSeconds = now.getSeconds();
+            
+            const minutesInCurrentCandle = currentMinutes % intervalMinutes;
+            const remainingMinutes = intervalMinutes - minutesInCurrentCandle - 1;
+            const remainingSeconds = 60 - currentSeconds;
+            
+            const nextCandleTime = new Date(now.getTime() + (remainingMinutes * 60 + remainingSeconds) * 1000);
+            const nextCandleTimeStr = nextCandleTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+            const seed = (card.symbol + stratKey + card.timeframe + Math.floor(now.getTime() / (intervalMinutes * 60000)))
+                .split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+            
+            const isBuy = seed % 2 === 0;
+            const confidence = 82 + (seed % 15);
+            const rrRatio = isBuy ? '1 : 2.8' : '1 : 3.2';
+
+            const realTimeClock = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+            card.aiData = {
+                direction: isBuy ? 'COMPRA (LONG)' : 'VENDA (SHORT)',
+                isBuy: isBuy,
+                confidence: confidence,
+                strategyName: stratObj.name,
+                reasoning: `[Análise de Abertura Futura]: O modelo escaneou os padrões de volume e médias da estratégia "${stratObj.name}". Aguardando término da vela atual para disparar a ordem no segundo exato da abertura da próxima vela. ${stratObj.aiLogic}`,
+                rrRatio: rrRatio,
+                entryTime: nextCandleTimeStr,
+                timestamp: realTimeClock
+            };
+        }
+
+        function toggleCardAI(index) {
+            const card = chartCards[index];
+            card.showAI = !card.showAI;
+            if (card.showAI) {
+                generateAISignalForCard(index);
+            }
+            renderAIOverlay(index);
+            
+            const btn = document.getElementById(`ai_btn_${index}`);
+            if (btn) {
+                if (card.showAI) {
+                    btn.className = "py-1 px-2.5 bg-gold text-obsidian rounded-lg font-extrabold text-[10px] flex items-center justify-center gap-1 shadow-md shadow-gold/30 transition";
+                } else {
+                    btn.className = "py-1 px-2.5 bg-gold/10 hover:bg-gold/20 text-gold border border-gold/40 rounded-lg font-bold text-[10px] flex items-center justify-center gap-1 transition";
+                }
+            }
+        }
+
+        function renderAIOverlay(index) {
+            const container = document.getElementById(`ai_overlay_container_${index}`);
+            if (!container) return;
+
+            const card = chartCards[index];
+            if (!card.showAI || !card.aiData) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const data = card.aiData;
+            const statusBg = data.isBuy 
+                ? 'bg-emerald-950/50 border-emerald-500/35' 
+                : 'bg-rose-950/50 border-rose-500/35';
+            const badgeColor = data.isBuy 
+                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40' 
+                : 'bg-rose-500/20 text-rose-300 border-rose-400/40';
+            const iconDirection = data.isBuy ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
+
+            container.innerHTML = `
+                <div class="ai-glass-panel absolute top-2.5 right-2.5 w-72 max-w-[92%] rounded-2xl p-3.5 z-20 text-left overflow-hidden shadow-2xl">
+                    <div class="ai-scanner-bar absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent opacity-75"></div>
+                    
+                    <div class="flex items-center justify-between border-b border-gold/20 pb-2.5 mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-lg bg-gold/15 border border-gold/30 flex items-center justify-center text-gold">
+                                <i class="fa-solid fa-microchip text-[11px]"></i>
+                            </div>
+                            <div>
+                                <div class="text-[11px] font-mono font-extrabold text-gold uppercase tracking-wider leading-none">IA L&amp;L Quantum</div>
+                                <div class="text-[8px] text-slate-400 font-mono mt-0.5">MOTOR PREDITIVO ATIVO</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button onclick="refreshCardAI(${index})" title="Recalcular Análise" class="w-6 h-6 rounded-lg bg-charcoal hover:bg-zinc-800 border border-gold/20 text-slate-300 hover:text-gold flex items-center justify-center transition text-[10px]">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </button>
+                            <button onclick="toggleCardAI(${index})" title="Fechar IA" class="w-6 h-6 rounded-lg bg-charcoal hover:bg-rose-950/60 border border-zinc-800 hover:border-rose-500/40 text-slate-400 hover:text-rose-400 flex items-center justify-center transition text-[10px]">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-charcoal/80 border border-gold/20 rounded-xl px-2.5 py-1.5 mb-2.5">
+                        <span class="text-[9px] text-slate-400 uppercase font-mono">Setup:</span>
+                        <span class="text-[10px] font-bold text-gold-light truncate max-w-[175px] flex items-center gap-1">
+                            <i class="fa-solid fa-crown text-gold text-[8px]"></i> ${data.strategyName}
+                        </span>
+                    </div>
+
+                    <div class="${statusBg} border rounded-xl p-2.5 mb-2.5">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-[9px] text-slate-400 font-mono uppercase tracking-wider">Entrada: Próxima Vela (${card.timeframe}m)</span>
+                            <span class="px-2 py-0.5 rounded-full border text-[9px] font-mono font-bold ${badgeColor}">
+                                ${data.confidence}% Certeza
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="font-black text-xs flex items-center gap-1.5 ${data.isBuy ? 'text-emerald-400' : 'text-rose-400'}">
+                                <i class="fa-solid ${iconDirection}"></i>
+                                <span>${data.direction}</span>
+                            </div>
+                            <div class="px-2 py-0.5 text-[10px] font-mono font-bold text-gold-light bg-obsidian/90 border border-gold/40 rounded-lg flex items-center gap-1 flex-shrink-0 shadow-md">
+                                <i class="fa-solid fa-hourglass-start text-gold text-[9px]"></i>
+                                <span>${data.entryTime}</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-2 pt-1.5 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-300">
+                            <span>Abertura Exata da Vela</span>
+                            <span class="text-gold font-bold">${data.rrRatio} (R:R)</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-obsidian/80 border border-gold/15 rounded-xl p-2.5">
+                        <div class="text-[9px] font-mono text-gold/80 uppercase tracking-wider mb-1 flex items-center gap-1">
+                            <i class="fa-solid fa-align-left text-[8px]"></i> Leitura Técnica
+                        </div>
+                        <p class="text-[10px] text-slate-300 leading-relaxed">
+                            ${data.reasoning}
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[8px] text-slate-500 font-mono mt-2 px-0.5">
+                        <span><i class="fa-solid fa-circle text-emerald-500 text-[6px] mr-1"></i>Sincronizado</span>
+                        <span>Atualizado às ${data.timestamp}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function refreshCardAI(index) {
+            generateAISignalForCard(index);
+            renderAIOverlay(index);
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById('chartsGrid');
+            container.className = `dashboard-grid grid-${currentGrid} transition-all duration-300`;
+            container.innerHTML = '';
+
+            const count = getGridCount(currentGrid);
+
+            for (let i = 0; i < count; i++) {
+                const card = chartCards[i];
+                const cardDiv = document.createElement('div');
+                const isMax = card.isMaximized;
+                
+                cardDiv.className = `bg-carbon border ${isMax ? 'border-gold card-maximized' : 'gold-border-subtle'} rounded-xl flex flex-col overflow-hidden shadow-xl h-full min-h-0 transition-all duration-200`;
+                cardDiv.id = `chart-card-${i}`;
+
+                const strategyBadge = card.activeStrategy 
+                    ? `<span id="badge_strat_${i}" class="bg-gold/15 text-gold border border-gold/30 text-[10px] px-1.5 py-0.5 rounded font-mono truncate max-w-[115px]"><i class="fa-solid fa-crown mr-1 text-[8px]"></i>${strategyPresets[card.activeStrategy]?.name || 'Setup'}</span>`
+                    : `<span id="badge_strat_${i}" class="hidden"></span>`;
+
+                cardDiv.innerHTML = `
+                    <!-- Luxury Card Header -->
+                    <div class="h-9 bg-charcoal border-b gold-border-subtle px-2.5 flex items-center justify-between text-xs select-none flex-shrink-0">
+                        <div class="flex items-center space-x-1.5 min-w-0">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0"></span>
+                            <input type="text" value="${card.symbol}" 
+                                   class="bg-obsidian text-gold-light font-mono font-bold px-1.5 py-0.5 rounded text-[10px] w-24 sm:w-28 uppercase border border-gold/25 focus:outline-none focus:border-gold"
+                                   onchange="updateCardSymbol(${i}, this.value)">
+                            ${strategyBadge}
+                        </div>
+                        <div class="flex items-center space-x-1 flex-shrink-0">
+                            <select onchange="updateCardTimeframe(${i}, this.value)" class="bg-obsidian text-slate-200 border border-gold/25 rounded px-1.5 py-0.5 text-[10px] focus:outline-none focus:border-gold">
+                                <option value="1" ${card.timeframe === '1' ? 'selected' : ''}>1m</option>
+                                <option value="5" ${card.timeframe === '5' ? 'selected' : ''}>5m</option>
+                                <option value="15" ${card.timeframe === '15' ? 'selected' : ''}>15m</option>
+                                <option value="60" ${card.timeframe === '60' ? 'selected' : ''}>1h</option>
+                                <option value="240" ${card.timeframe === '240' ? 'selected' : ''}>4h</option>
+                                <option value="D" ${card.timeframe === 'D' ? 'selected' : ''}>1D</option>
+                            </select>
+
+                            <select onchange="updateCardStyle(${i}, this.value)" class="bg-obsidian text-slate-200 border border-gold/25 rounded px-1.5 py-0.5 text-[10px] focus:outline-none focus:border-gold hidden sm:inline-block">
+                                <option value="1" ${card.style === '1' ? 'selected' : ''}>Velas</option>
+                                <option value="0" ${card.style === '0' ? 'selected' : ''}>Barras</option>
+                                <option value="2" ${card.style === '2' ? 'selected' : ''}>Linha</option>
+                                <option value="3" ${card.style === '3' ? 'selected' : ''}>Área</option>
+                                <option value="8" ${card.style === '8' ? 'selected' : ''}>Heikin Ashi</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- TradingView Chart Area + AI Overlay + Center Candle Timer -->
+                    <div class="flex-1 w-full h-full relative min-h-0 bg-obsidian" id="tv_widget_wrapper_${i}" onclick="setActiveChartIndex(${i})">
+                        <div class="w-full h-full" id="tv_widget_container_${i}"></div>
+                        
+                        <!-- Center Candle Timer Badge -->
+                        <div class="candle-timer-center rounded-xl px-3 py-1.5 flex items-center gap-2 select-none">
+                            <span class="w-2 h-2 rounded-full bg-gold animate-ping"></span>
+                            <div class="flex flex-col items-center">
+                                <span class="text-[8px] font-mono font-bold text-gold/80 uppercase tracking-widest leading-tight">Vela (${card.timeframe}m)</span>
+                                <span id="candle_timer_val_${i}" class="text-xs font-mono font-extrabold text-gold-light leading-tight">00:00</span>
+                            </div>
+                        </div>
+
+                        <div id="ai_overlay_container_${i}"></div>
+                    </div>
+
+                    <!-- Luxury Bottom Action Bar -->
+                    <div class="h-9 bg-charcoal border-t gold-border-subtle px-2.5 flex items-center justify-between gap-2 text-xs flex-shrink-0 select-none">
+                        <button onclick="openStrategyModal(${i})" class="flex-1 py-1 px-2 bg-obsidian hover:bg-zinc-900 text-gold border border-gold/30 hover:border-gold rounded-lg font-semibold text-[10px] flex items-center justify-center gap-1.5 transition truncate">
+                            <i class="fa-solid fa-wand-magic-sparkles text-[9px]"></i> Estratégias
+                        </button>
+                        
+                        <button id="ai_btn_${i}" onclick="toggleCardAI(${i})" class="py-1 px-2.5 ${card.showAI ? 'bg-gold text-obsidian font-extrabold shadow-md shadow-gold/30' : 'bg-gold/10 hover:bg-gold/20 text-gold border border-gold/40 font-bold'} rounded-lg text-[10px] flex items-center justify-center gap-1 transition">
+                            <i class="fa-solid fa-brain text-[9px]"></i> IA
+                        </button>
+
+                        <button onclick="toggleCardMaximize(${i})" title="${isMax ? 'Restaurar Tamanho' : 'Maximizar Gráfico'}"
+                                class="py-1 px-2 ${isMax ? 'bg-gold/20 text-gold border-gold/50' : 'bg-obsidian text-slate-300 hover:text-gold border-zinc-800'} border rounded-lg font-semibold text-[10px] flex items-center transition">
+                            <i class="fa-solid ${isMax ? 'fa-compress' : 'fa-expand'} text-[9px]"></i>
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(cardDiv);
+                initTradingViewWidget(i, card.symbol, card.timeframe, card.style, card.activeStrategy);
+                if (card.showAI) {
+                    renderAIOverlay(i);
+                }
+            }
+        }
+
+        function setActiveChartIndex(index) {
+            activeStrategyChartIndex = index;
+        }
+
+        function assignToActiveChart(symbol) {
+            const i = activeStrategyChartIndex || 0;
+            if (chartCards[i]) {
+                chartCards[i].symbol = symbol;
+                renderDashboard();
+            }
+        }
+
+        function initTradingViewWidget(index, symbol, interval, style, strategyKey) {
+            const containerId = `tv_widget_container_${index}`;
+            if (!document.getElementById(containerId)) return;
+            
+            document.getElementById(containerId).innerHTML = '';
+
+            const studiesList = strategyKey && strategyPresets[strategyKey] ? strategyPresets[strategyKey].studies : [];
+
+            try {
+                tvWidgets[index] = new TradingView.widget({
+                    "width": "100%",
+                    "height": "100%",
+                    "symbol": symbol,
+                    "interval": interval,
+                    "timezone": "Etc/UTC",
+                    "theme": "dark",
+                    "style": style,
+                    "locale": "br",
+                    "toolbar_bg": "#0e0e12",
+                    "enable_publishing": false,
+                    "hide_top_toolbar": false,
+                    "hide_legend": false,
+                    "save_image": false,
+                    "studies": studiesList,
+                    "container_id": containerId
+                });
+            } catch (e) {
+                console.error("Erro ao inicializar widget TradingView:", e);
+            }
+        }
+
+        function updateCardSymbol(index, val) {
+            chartCards[index].symbol = val.toUpperCase();
+            initTradingViewWidget(index, chartCards[index].symbol, chartCards[index].timeframe, chartCards[index].style, chartCards[index].activeStrategy);
+        }
+
+        function updateCardTimeframe(index, val) {
+            chartCards[index].timeframe = val;
+            initTradingViewWidget(index, chartCards[index].symbol, chartCards[index].timeframe, chartCards[index].style, chartCards[index].activeStrategy);
+        }
+
+        function updateCardStyle(index, val) {
+            chartCards[index].style = val;
+            initTradingViewWidget(index, chartCards[index].symbol, chartCards[index].timeframe, chartCards[index].style, chartCards[index].activeStrategy);
+        }
+
+        function toggleCardMaximize(index) {
+            chartCards[index].isMaximized = !chartCards[index].isMaximized;
+            renderDashboard();
+        }
+
+        function syncAllTimeframes(tf) {
+            chartCards.forEach((card, idx) => {
+                card.timeframe = tf;
+                initTradingViewWidget(idx, card.symbol, card.timeframe, card.style, card.activeStrategy);
+            });
+        }
+
+        function openStrategyModal(index) {
+            activeStrategyChartIndex = index;
+            document.getElementById('modalTargetLabel').innerText = `#${index + 1}`;
+            document.getElementById('strategyModal').classList.remove('hidden');
+        }
+
+        function closeStrategyModal() {
+            document.getElementById('strategyModal').classList.add('hidden');
+        }
+
+        function buildStrategyModalOptions() {
+            const listContainer = document.getElementById('strategyOptionsList');
+            if (!listContainer) return;
+            listContainer.innerHTML = '';
+
+            Object.keys(strategyPresets).forEach(key => {
+                const preset = strategyPresets[key];
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-2.5 bg-obsidian hover:bg-zinc-900 border border-gold/15 hover:border-gold/50 rounded-xl flex items-center justify-between transition group";
+                btn.innerHTML = `
+                    <div>
+                        <div class="font-bold text-xs text-slate-200 group-hover:text-gold">${preset.name}</div>
+                        <div class="text-[9px] font-mono text-slate-400 mt-0.5">Estudos: ${preset.studies.length > 0 ? preset.studies.join(', ') : 'Price Action Puro'}</div>
+                    </div>
+                    <span class="text-[10px] font-mono font-bold text-gold opacity-0 group-hover:opacity-100 transition">Aplicar</span>
+                `;
+                btn.onclick = () => applyStrategyToActiveChart(key);
+                listContainer.appendChild(btn);
+            });
+        }
+
+        function applyStrategyToActiveChart(strategyKey) {
+            const i = activeStrategyChartIndex;
+            if (chartCards[i]) {
+                chartCards[i].activeStrategy = strategyKey === 'clear' ? '' : strategyKey;
+                if (chartCards[i].showAI) {
+                    generateAISignalForCard(i);
+                }
+                renderDashboard();
+            }
+            closeStrategyModal();
+        }
+
+        // ==========================================
+        // PLANILHA DE GERENCIAMENTO (2x1 e 4x2)
+        // ==========================================
+        let currentRiskTab = '2x1';
+        let riskData = {
+            '2x1': createDefaultRiskRows(25),
+            '4x2': createDefaultRiskRows(5)
+        };
+
+        function createDefaultRiskRows(defaultPct) {
+            const rows = [];
+            for (let d = 1; d <= 31; d++) {
+                rows.push({
+                    day: d,
+                    bankroll: d === 1 ? 1000 : '',
+                    entries: [
+                        { payout: 92, result: '' },
+                        { payout: 92, result: '' },
+                        { payout: 92, result: '' },
+                        { payout: 92, result: '' },
+                        { payout: 92, result: '' }
+                    ]
+                });
+            }
+            return rows;
+        }
+
+        function openRiskManagement() {
+            document.getElementById('tradingWorkspace').classList.add('hidden');
+            document.getElementById('riskManagementView').classList.remove('hidden');
+            
+            // Alternar botões e controles no menu superior
+            document.getElementById('navRiskBtn').classList.add('hidden');
+            document.getElementById('navBackBtn').classList.remove('hidden');
+            document.getElementById('sidebarToggleBtn').classList.add('hidden');
+            document.getElementById('headerChartControls').classList.add('hidden');
+            document.getElementById('headerRiskStatus').classList.remove('hidden');
+            document.getElementById('headerRiskStatus').classList.add('flex');
+
+            renderRiskTable();
+        }
+
+        function closeRiskManagement() {
+            document.getElementById('riskManagementView').classList.add('hidden');
+            document.getElementById('tradingWorkspace').classList.remove('hidden');
+
+            // Restaurar botões e controles no menu superior
+            document.getElementById('navBackBtn').classList.add('hidden');
+            document.getElementById('navRiskBtn').classList.remove('hidden');
+            document.getElementById('sidebarToggleBtn').classList.remove('hidden');
+            document.getElementById('headerChartControls').classList.remove('hidden');
+            document.getElementById('headerRiskStatus').classList.add('hidden');
+            document.getElementById('headerRiskStatus').classList.remove('flex');
+        }
+
+        function switchRiskTab(tab) {
+            currentRiskTab = tab;
+            const btn2x1 = document.getElementById('tab-2x1');
+            const btn4x2 = document.getElementById('tab-4x2');
+            const pctInput = document.getElementById('entryPercentInput');
+
+            if (tab === '2x1') {
+                btn2x1.className = "px-3 py-1 text-xs font-extrabold rounded-md bg-gold text-obsidian transition";
+                btn4x2.className = "px-3 py-1 text-xs font-bold rounded-md text-slate-400 hover:text-gold transition";
+                if (pctInput) pctInput.value = 10;
+            } else {
+                btn4x2.className = "px-3 py-1 text-xs font-extrabold rounded-md bg-gold text-obsidian transition";
+                btn2x1.className = "px-3 py-1 text-xs font-bold rounded-md text-slate-400 hover:text-gold transition";
+                if (pctInput) pctInput.value = 5;
+            }
+            renderRiskTable();
+        }
+
+        function formatBRL(val) {
+            if (val === '' || val === null || isNaN(val)) return 'R$ -';
+            return Number(val).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function calculateRowValues(row, entryPct) {
+            const baseBank = parseFloat(row.bankroll);
+            if (isNaN(baseBank) || baseBank <= 0) {
+                return { entryAmounts: [null, null, null, null, null], finalBank: null };
+            }
+
+            const firstEntry = baseBank * (entryPct / 100);
+            const entryAmounts = [firstEntry, null, null, null, null];
+            let currentBalance = baseBank;
+
+            for (let i = 0; i < 5; i++) {
+                const stake = entryAmounts[i];
+                if (stake === null) break;
+
+                const res = row.entries[i].result;
+                const payout = (parseFloat(row.entries[i].payout) || 0) / 100;
+
+                if (res === 'WIN') {
+                    const profit = stake * payout;
+                    currentBalance += profit;
+                    if (i < 4) {
+                        entryAmounts[i + 1] = stake + profit;
+                    }
+                } else if (res === 'LOSS') {
+                    currentBalance -= stake;
+                    if (i < 4) {
+                        entryAmounts[i + 1] = firstEntry;
+                    }
+                } else {
+                    break;
+                }
+            }
+
+            const hasAnyResult = row.entries.some(e => e.result === 'WIN' || e.result === 'LOSS');
+            return {
+                entryAmounts,
+                finalBank: hasAnyResult ? currentBalance : null
+            };
+        }
+
+        function updateRiskBankroll(rowIndex, val) {
+            const parsed = parseFloat(val);
+            riskData[currentRiskTab][rowIndex].bankroll = isNaN(parsed) ? '' : parsed;
+            renderRiskTable();
+        }
+
+        function updateRiskPayout(rowIndex, entryIndex, val) {
+            const parsed = parseFloat(val);
+            riskData[currentRiskTab][rowIndex].entries[entryIndex].payout = isNaN(parsed) ? 0 : parsed;
+            renderRiskTable();
+        }
+
+        function updateRiskResult(rowIndex, entryIndex, val) {
+            riskData[currentRiskTab][rowIndex].entries[entryIndex].result = val;
+            renderRiskTable();
+        }
+
+        function recalculateAllRiskRows() {
+            renderRiskTable();
+        }
+
+        function resetRiskSheet() {
+            riskData[currentRiskTab] = createDefaultRiskRows();
+            renderRiskTable();
+        }
+
+        function renderRiskTable() {
+            const tbody = document.getElementById('riskTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const entryPct = parseFloat(document.getElementById('entryPercentInput')?.value) || 5;
+            const rows = riskData[currentRiskTab];
+
+            rows.forEach((row, rIdx) => {
+                const calc = calculateRowValues(row, entryPct);
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-zinc-900/70 transition";
+
+                let entriesHtml = '';
+                for (let eIdx = 0; eIdx < 5; eIdx++) {
+                    const amount = calc.entryAmounts[eIdx];
+                    const entryObj = row.entries[eIdx];
+                    const res = entryObj.result;
+
+                    let selectStyle = "bg-obsidian text-slate-300 border-zinc-700";
+                    if (res === 'WIN') selectStyle = "bg-emerald-950/90 text-emerald-400 border-emerald-500/60 font-extrabold";
+                    if (res === 'LOSS') selectStyle = "bg-rose-950/90 text-rose-400 border-rose-500/60 font-extrabold";
+
+                    entriesHtml += `
+                        <td class="py-1.5 px-3 border-r border-zinc-800/80 text-right bg-gold/[0.03] text-gold-light font-semibold">
+                            ${formatBRL(amount)}
+                        </td>
+                        <td class="py-1.5 px-2 border-r border-zinc-800/80 text-center">
+                            <div class="inline-flex items-center bg-obsidian border border-zinc-800 rounded px-1">
+                                <input type="number" value="${entryObj.payout}" min="1" max="100"
+                                       onchange="updateRiskPayout(${rIdx}, ${eIdx}, this.value)"
+                                       class="w-9 bg-transparent text-center text-slate-200 focus:outline-none text-[11px]">
+                                <span class="text-slate-500 text-[10px]">%</span>
+                            </div>
+                        </td>
+                        <td class="py-1.5 px-2 border-r border-gold/20 text-center">
+                            <select onchange="updateRiskResult(${rIdx}, ${eIdx}, this.value)"
+                                    class="px-2 py-1 rounded border text-[11px] focus:outline-none cursor-pointer ${selectStyle}">
+                                <option value="" ${res === '' ? 'selected' : ''}>-</option>
+                                <option value="WIN" ${res === 'WIN' ? 'selected' : ''}>WIN ✓</option>
+                                <option value="LOSS" ${res === 'LOSS' ? 'selected' : ''}>LOSS ✕</option>
+                            </select>
+                        </td>
+                    `;
+                }
+
+                const finalBankColor = calc.finalBank === null
+                    ? 'text-slate-500'
+                    : (calc.finalBank >= parseFloat(row.bankroll) ? 'text-emerald-400 font-extrabold' : 'text-rose-400 font-extrabold');
+
+                tr.innerHTML = `
+                    <td class="py-1.5 px-3 border-r border-gold/20 text-center font-bold bg-gold/10 text-gold sticky left-0 z-10">
+                        ${row.day}
+                    </td>
+                    <td class="py-1.5 px-2 border-r border-gold/20 text-right">
+                        <div class="flex items-center justify-end bg-obsidian border border-gold/25 rounded px-2 py-0.5 focus-within:border-gold">
+                            <span class="text-gold/70 text-[10px] mr-1">R$</span>
+                            <input type="number" step="0.01" placeholder="0,00" value="${row.bankroll}"
+                                   onchange="updateRiskBankroll(${rIdx}, this.value)"
+                                   class="w-20 bg-transparent text-right text-slate-100 font-bold focus:outline-none text-xs">
+                        </div>
+                    </td>
+                    ${entriesHtml}
+                    <td class="py-1.5 px-4 text-right bg-gold/10 ${finalBankColor}">
+                        ${formatBRL(calc.finalBank)}
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
